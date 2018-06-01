@@ -93,6 +93,14 @@ def shuffle_examples(image_paths, labels):
 def random_rotate_image(image):
     angle = np.random.uniform(low=-10.0, high=10.0)
     return misc.imrotate(image, angle, 'bicubic')
+
+def random_downscale_image(image):
+    image_width = image.shape[0]
+    image_height = image.shape[1]
+    aspect_ratio = image_height / image_width
+    new_width = np.random.randint(low=80, high=180)
+    new_height = int(new_width * aspect_ratio)
+    return misc.imresize(image, (new_height, new_width), 'bicubic')
   
 # 1: Random rotate 2: Random crop  4: Random flip  8:  Fixed image standardization  16: Flip
 RANDOM_ROTATE = 1
@@ -100,6 +108,7 @@ RANDOM_CROP = 2
 RANDOM_FLIP = 4
 FIXED_STANDARDIZATION = 8
 FLIP = 16
+RANDOM_DOWNSCALE = 32
 def create_input_pipeline(input_queue, image_size, nrof_preprocess_threads, batch_size_placeholder):
     images_and_labels_list = []
     for _ in range(nrof_preprocess_threads):
@@ -122,6 +131,9 @@ def create_input_pipeline(input_queue, image_size, nrof_preprocess_threads, batc
                             lambda:tf.image.per_image_standardization(image))
             image = tf.cond(get_control_flag(control[0], FLIP),
                             lambda:tf.image.flip_left_right(image),
+                            lambda:tf.identity(image))
+            image = tf.cond(get_control_flag(control[0], RANDOM_DOWNSCALE), 
+                            lambda:tf.py_func(random_downscale_image, [image], tf.uint8), 
                             lambda:tf.identity(image))
             #pylint: disable=no-member
             image.set_shape(image_size + (3,))
