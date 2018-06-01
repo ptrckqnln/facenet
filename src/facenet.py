@@ -99,14 +99,14 @@ def random_downscale_image(image):
     image_height = image.shape[1]
 
     # Don't scale an already small image.
-    if image_width <= 80 and image_height <= 80:
+    if image_width <= 180 and image_height <= 180:
         return image
     
     aspect_ratio = image_height / image_width
     new_width = np.random.randint(low=80, high=180)
     new_height = int(new_width * aspect_ratio)
 
-    return misc.imresize(image, (new_height, new_width), 'bicubic')
+    return misc.imresize(image, (new_height, new_width), 'bicubic', 'F')
   
 # 1: Random rotate 2: Random crop  4: Random flip  8:  Fixed image standardization  16: Flip
 RANDOM_ROTATE = 1
@@ -139,7 +139,7 @@ def create_input_pipeline(input_queue, image_size, nrof_preprocess_threads, batc
                             lambda:tf.image.flip_left_right(image),
                             lambda:tf.identity(image))
             image = tf.cond(get_control_flag(control[0], RANDOM_DOWNSCALE), 
-                            lambda:tf.py_func(random_downscale_image, [image], tf.uint8), 
+                            lambda:tf.py_func(random_downscale_image, [image], tf.float32), 
                             lambda:tf.identity(image))
             #pylint: disable=no-member
             image.set_shape(image_size + (3,))
