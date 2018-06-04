@@ -98,9 +98,7 @@ def random_downscale_image(image):
     image_width = image.shape[0]
     image_height = image.shape[1]
 
-    # Don't scale an already small image.
-    if image_width <= 180 and image_height <= 180:
-        return image
+    if image_width <= 180: return image
     
     aspect_ratio = image_height / image_width
     new_width = np.random.randint(low=80, high=180)

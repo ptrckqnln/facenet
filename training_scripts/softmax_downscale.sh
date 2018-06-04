@@ -1,14 +1,14 @@
 python3 src/train_softmax.py \
 --logs_base_dir ~/training/logs/ \
 --models_base_dir ~/training/models/ \
---pretrained_model ~/Downloads/20180402-114759/20180402-114759/model-20180402-114759.ckpt-275 \
+--pretrained_model ~/training/models/20180601-154806/model-20180601-154806.ckpt-13 \
 --data_dir ~/Downloads/train/ \
 --image_size 160 \
 --model_def models.inception_resnet_v1 \
 --optimizer ADAM \
 --learning_rate -1 \
 --max_nrof_epochs 500 \
---batch_size 90 \
+--batch_size 48 \
 --keep_probability 0.4 \
 --random_flip \
 --random_downscale \
